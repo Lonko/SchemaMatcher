@@ -1,3 +1,5 @@
+matchMatrix.py
+bin/
 target/
 .settings/
 .classpath
