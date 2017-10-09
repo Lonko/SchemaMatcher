@@ -34,7 +34,7 @@ public class MatchFinder {
 		m2 = g2.getAdjacencyMatrix();
 		matchIndex = this.mc.getMatchIndex(m1, m2);
 		
-//		matchIndex = twoOptSwitch(m1, m2, matchIndex);
+		matchIndex = twoOptSwitch(m1, m2, matchIndex);
 		
 		return createMatch(g1, g2, s1.getWebsite(), s2.getWebsite(), matchIndex, category);
 	}
@@ -54,30 +54,31 @@ public class MatchFinder {
 		return new Match(category, matchedLabels);
 	}
 	
+	/* Makes use of an hill-climbing approach to improve the initial match
+	 * by switching couples of attributes matched and accepting new matches
+	 * that maximize the normal distance 
+	 */
 	private int[] twoOptSwitch(double[][] m1, double[][] m2, int[] currentMatch){
 		int[] candidateMatch = Arrays.copyOf(currentMatch, currentMatch.length);
 		double maxNDistance = getNormalDistance(m1, m2, currentMatch);
-		//		System.out.println("Distanza iniziale:"+maxNDistance);
 		int l = currentMatch.length, switches = 0;
 		boolean repeat = false;
 
-//		System.out.println(Arrays.toString(currentMatch));
 		do{
+			//repeat nested for loop if a switch has been accepted
 			hill_climbing:
 				for(int i = 0; i < l-1; i++){
 					repeat = false;
 					for(int j = i+1; j < l; j++){
 						candidateMatch[j] = currentMatch[i];
 						candidateMatch[i] = currentMatch[j];
-						//				System.out.println(Arrays.toString(candidateMatch));
 						double currentNDistance = getNormalDistance(m1,m2,candidateMatch);
-						//				System.out.println("Distanza nuova:"+currentNDistance);
 						if(currentNDistance > maxNDistance){
-//							System.out.println(Arrays.toString(candidateMatch));
 							currentMatch = Arrays.copyOf(candidateMatch, candidateMatch.length);;
 							maxNDistance = currentNDistance;
 							switches++;
 							repeat = true;
+							//restart
 							break hill_climbing;
 						} else
 							candidateMatch = Arrays.copyOf(currentMatch, currentMatch.length);
@@ -86,7 +87,7 @@ public class MatchFinder {
 					}
 				}
 		}while(repeat);
-//		System.out.println(switches);
+		
 		return currentMatch;
 	}
 	
@@ -107,21 +108,22 @@ public class MatchFinder {
 		return normalDistance;
 	}
 	
-	private double getEuclideanDistance(double[][] m1, double[][] m2, int[] matchIndex){
-		double euclideanDistance = 0.0;
-		int length = m1.length;
-		
-		for(int i1 = 0; i1 < length; i1++)
-			for(int j1 = 0; j1 < length; j1++){
-				int i2 = matchIndex[i1];
-				int j2 = matchIndex[j1];
-//				double absDiff = Math.abs(m1[i1][j1] - m2[i2][j2]);
-//				double sum = m1[i1][j1] + m2[i2][j2];
-//				normalDistance += 1-(ALPHA*(absDiff/sum));
-				double diff = m1[i1][j1] - m2[i2][j2];
-				euclideanDistance += diff*diff;
-			}
-		
-		return Math.sqrt(euclideanDistance);
-	}
+	
+	/* Unlikely to be used, as Euclidean Distance doesn't apply to all possible cardinalities of matches.
+	 * It's preferred to use the Normal Distance for executions on real datasets.
+	 */
+//	private double getEuclideanDistance(double[][] m1, double[][] m2, int[] matchIndex){
+//		double euclideanDistance = 0.0;
+//		int length = m1.length;
+//		
+//		for(int i1 = 0; i1 < length; i1++)
+//			for(int j1 = 0; j1 < length; j1++){
+//				int i2 = matchIndex[i1];
+//				int j2 = matchIndex[j1];
+//				double diff = m1[i1][j1] - m2[i2][j2];
+//				euclideanDistance += diff*diff;
+//			}
+//		
+//		return Math.sqrt(euclideanDistance);
+//	}
 }

@@ -62,6 +62,7 @@ public class UndirectedArc {
 	}
 
 	@Override
+	//two UndirectedArcs are considered equal even if the nodes are inverted
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;

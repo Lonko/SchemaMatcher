@@ -24,6 +24,10 @@ public class SourceFactory {
 		this.datasetPath = datasetPath;
 	}
 	
+	/* Reads sources from dataset, filtering by website and categories.
+	 * It's also possible to filter the attributes to consider (if validAttributes is null then all attributes
+	 * will be included)
+	 */
 	public ArrayList<Source> readByCatAndSite(ArrayList<String> websites, ArrayList<String> categories,
 							Map<String, List<String>> validAttributes){
 		
@@ -83,8 +87,8 @@ public class SourceFactory {
 		return new Source(website, category, attributes);
 	}
 	
+	//case insensitive get on JSONObject
 	private String getIgnoreCase(JSONObject json, String key) {
-
 	    Set<String> keys = json.keySet();
 	    for(String k : keys){
 	    	if(k.equalsIgnoreCase(key)){
@@ -93,7 +97,6 @@ public class SourceFactory {
 	    }
 
 	    return null;
-
 	}
 	
 	private ArrayList<String> getAllLabels(JSONArray allProducts){

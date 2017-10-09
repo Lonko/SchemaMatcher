@@ -29,8 +29,6 @@ package math.utils;
  * Requirements: JDK 1.5.0_01 or better. 
  *  
  */ 
- 
-import static java.lang.Math.*; 
 
 import java.util.*; 
  
@@ -509,23 +507,5 @@ public class HungarianAlgorithm {
    
   return minval; 
  } 
- 
-	public static void main(String[] args) {
-		double[][] costMatrix = {{0.909, 0.818, 0.973, 0.893},{0.585, 0.653, 0.612, 0.950},
-				{0.991,0.524,0.892,0.601},{0.520,0.931,0.846,0.618}};
-//		double[][] costMatrix = {{0.909, 0.818, 0.973, 0.893},{0.585, 0.653, 0.612, 0.950},
-//				{0.520,0.931,0.846,0.618}, {0.991,0.524,0.892,0.601}};		
-//		int[] indexMatched = new HungarianAlgorithm(costMatrix).execute();
-//		System.out.println(Arrays.toString(indexMatched));
-		String sumType = "max";  
-		long startTime = System.currentTimeMillis();  
-		int[][] assignment = new int[4][2]; 
-		assignment = new HungarianAlgorithm().hgAlgorithm(costMatrix, sumType); 
-		System.out.println("Job Finished in " 
-				+ (System.currentTimeMillis() - startTime) / 1000.0 
-				+ " seconds");
-		
-		System.out.println(Arrays.deepToString(assignment));
-	}
 
 }

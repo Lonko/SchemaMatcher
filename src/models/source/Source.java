@@ -1,8 +1,6 @@
 package models.source;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.stream.Collectors;
 
 public class Source {
 	private String website;
@@ -15,38 +13,33 @@ public class Source {
 		this.attributes = attributes;
 	}
 	
-	public double getEntropy(String label){
-		double entropy = 0.0;
-		ArrayList<String> valueList, distinctValueList;
-		
-		valueList = getAttribute(label).getValues();
-		distinctValueList = valueList.stream().distinct().collect(Collectors.toCollection(ArrayList::new));
-		for(String val : distinctValueList){
-			int n = Collections.frequency(valueList, val);
-			double p = (double)n/valueList.size();
-			if(label.equals("C"))
-				System.out.println(p*(Math.log(p)/Math.log(2)));
-			entropy -= p*(Math.log(p)/Math.log(2));
-		}
-		
-		return entropy;
-	}
+	/* Shouldn't be necessary: 
+	 * getMutualInformation(label1, label2), with label1 = label2, should give the same result
+	 */
+//	public double getEntropy(String label){
+//		double entropy = 0.0;
+//		ArrayList<String> valueList, distinctValueList;
+//		
+//		valueList = getAttribute(label).getValues();
+//		distinctValueList = valueList.stream().distinct().collect(Collectors.toCollection(ArrayList::new));
+//		for(String val : distinctValueList){
+//			int n = Collections.frequency(valueList, val);
+//			double p = (double)n/valueList.size();
+//			if(label.equals("C"))
+//				System.out.println(p*(Math.log(p)/Math.log(2)));
+//			entropy -= p*(Math.log(p)/Math.log(2));
+//		}
+//		
+//		return entropy;
+//	}
 
 	public double getMutualInformation(String label1, String label2){
-		ArrayList<String> valueList1, valueList2, distinctValueList1, distinctValueList2;
 		double mi = 0.0;
+		Attribute a1 = getAttribute(label1);
+		Attribute a2 = getAttribute(label2);
 		
-		valueList1 = getAttribute(label1).getValues();
-		valueList2 = getAttribute(label2).getValues();
-		distinctValueList1 = valueList1.stream().distinct().collect(Collectors.toCollection(ArrayList::new));
-		distinctValueList2 = valueList2.stream().distinct().collect(Collectors.toCollection(ArrayList::new));	
-		if(valueList1 == null || valueList2 == null){
-			System.err.println("Entrambe le label devono essere corrette! Label utilizzate:" +
-					label1 + "\t" + label2);
-			return -1.0;
-		}
-		
-		double[][] matrix = getJointProbDistr(valueList1, valueList2, distinctValueList1, distinctValueList2);
+		double[][] matrix = getJointProbDistr(a1.getValues(), a2.getValues(),
+												a1.getDistinctValues(), a2.getDistinctValues());
 		double[] margProb1, margProb2;
 		margProb1 = getMarginalProbabilityDistribution(matrix, true);
 		margProb2 = getMarginalProbabilityDistribution(matrix, false);	
@@ -63,26 +56,23 @@ public class Source {
 	}
 	
 	private double[] getMarginalProbabilityDistribution(double[][] matrix, boolean row){
-		int rows = matrix.length;
-		int columns = matrix[0].length;
-		int length = row ? rows : columns;
-		double[] margProb = new double[length];
-		
-		if(row) //iterate rows->columns
-			for(int i = 0; i < rows; i++){
-				double acc = 0.0;
-				for(int j = 0; j < columns; j++)
+		int dim1 =  row ? matrix.length : matrix[0].length;
+		int dim2 =  row ? matrix[0].length : matrix.length;
+		double[] margProb = new double[dim1];
+
+		/* iterates rows -> columns if row == true
+		 * else  columns -> rows
+		 */
+		for(int i = 0; i < dim1; i++){
+			double acc = 0.0;
+			for(int j = 0; j < dim2; j++)
+				if(row)
 					acc += matrix[i][j];
-				margProb[i] = acc;
-			}
-		else	//iterate columns->rows
-			for(int i = 0; i < columns; i++){
-				double acc = 0.0;
-				for(int j = 0; j < rows; j++)
+				else
 					acc += matrix[j][i];
-				margProb[i] = acc;
-			}
-			
+			margProb[i] = acc;
+		}
+
 		return margProb;
 	}
 	

@@ -2,6 +2,7 @@ package models.source;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 public class Attribute {
 	private String label;
@@ -20,6 +21,10 @@ public class Attribute {
 
 	public void setLabel(String label) {
 		this.label = label;
+	}
+	
+	public ArrayList<String> getDistinctValues(){
+		return this.values.stream().distinct().collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	public ArrayList<String> getValues() {

@@ -12,6 +12,9 @@ public class MatrixController {
 	public MatrixController(){
 	}
 	
+	/* takes 2 matrixes representing 2 schemas in input and uses eigendecomposition to obtain a single matrix
+	 * on which the hungarian method can be used to obtain a matrix representing a match between the 2 schemas 
+	 */
 	public int[] getMatchIndex(double[][] m1, double[][] m2){
 		Matrix leftOperator = getAbsEigendec(m2);
 		Matrix rightOperator = getAbsEigendec(m1).transpose();
@@ -29,6 +32,8 @@ public class MatrixController {
 		
 	}
 	
+	/* returns the absolute version of the eigenvector matrix obtained from the matrix m 
+	 */
 	private Matrix getAbsEigendec(double[][] m){
 		Matrix matrix = new Matrix(m);
 		EigenvalueDecomposition evd = matrix.eig();
@@ -38,25 +43,32 @@ public class MatrixController {
 		return vectorMatrix;
 	}
 	
+	
+	/* returns the absolute version of a matrix whose columns are a permutation of the matrix v,
+ 	 * the permutation is obtained applying the same changes in the order of the columns
+ 	 * as the ones applyed to the diagonal matrix d to sort its elements in a decreasing order
+	 */
 	private Matrix getAbsOrderedMatrix(Matrix d, Matrix v){
 		int columns = d.getColumnDimension();
 		int[] indexes = new int[columns];
-		ArrayList<Integer> originalVector = new ArrayList<>();
-		ArrayList<Integer> sortedVector = new ArrayList<>();
+		ArrayList<Double> originalVector = new ArrayList<>();
+		ArrayList<Double> sortedVector = new ArrayList<>();
 		Matrix orderedMatrix = new Matrix(columns, columns);
 		
 		for(int i = 0; i < columns; i++){
-			originalVector.add(i);
-			sortedVector.add(i);
+			originalVector.add(d.get(i,i));
+			sortedVector.add(d.get(i,i));
 		}
 		
 		Collections.sort(sortedVector,(a,b)->b.compareTo(a));
 		
+		//get the new indexes of the sorted elements in the diagonal matrix
 		for(int i = 0; i < columns; i++){
-			int val = originalVector.get(i);
+			double val = originalVector.get(i);
 			indexes[i] = sortedVector.indexOf(val);
 		}
 		
+		//create the new matrix
 		for(int i = 0; i < columns; i++)
 			for(int j = 0; j < columns; j++){
 				int index = indexes[j];
