@@ -1,6 +1,8 @@
 # SchemaMatcher
 Java implementation of an algorithm to find the match between attributes of two different schemas.
+
 The algorithm is expected to work with any couple of schema that represent the same kind of entity.
+
 In particular the algorithm confronts schemas representing products from two different websources, but belonging to the same category.
 
 References:
