@@ -18,7 +18,7 @@ import tools.SourceFactory;
 
 public class SchemaMatcherLauncher {
 	public static void main(String[] args) {
-		String datasetPath = "/home/marco/Documenti/TESI/specifications";
+		String datasetPath = args[0];
 		String[] websites = {"www.shopmania.in", "www.shopping.com"};
 		String[] categories = {"camera"};
 		String[] aList1 = {"brand:", "optical zoom", "sensor type", "video resolution", "viewfinder type",
