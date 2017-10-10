@@ -15,8 +15,8 @@ public class MatchFinder {
 	
 	private GraphCreator gc;
 	private MatrixController mc;
-	private static final double ALPHA = 1.0;
-	private static final int N_SWITCH = 100;
+	private static final double ALPHA = 6.0;
+	private static final int N_SWITCH = 25;
 	
 	public MatchFinder(){
 		gc = new GraphCreator();
@@ -88,6 +88,7 @@ public class MatchFinder {
 				}
 		}while(repeat);
 		
+		System.out.println(maxNDistance);
 		return currentMatch;
 	}
 	
@@ -107,23 +108,4 @@ public class MatchFinder {
 		
 		return normalDistance;
 	}
-	
-	
-	/* Unlikely to be used, as Euclidean Distance doesn't apply to all possible cardinalities of matches.
-	 * It's preferred to use the Normal Distance for executions on real datasets.
-	 */
-//	private double getEuclideanDistance(double[][] m1, double[][] m2, int[] matchIndex){
-//		double euclideanDistance = 0.0;
-//		int length = m1.length;
-//		
-//		for(int i1 = 0; i1 < length; i1++)
-//			for(int j1 = 0; j1 < length; j1++){
-//				int i2 = matchIndex[i1];
-//				int j2 = matchIndex[j1];
-//				double diff = m1[i1][j1] - m2[i2][j2];
-//				euclideanDistance += diff*diff;
-//			}
-//		
-//		return Math.sqrt(euclideanDistance);
-//	}
 }
