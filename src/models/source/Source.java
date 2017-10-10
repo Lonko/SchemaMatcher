@@ -12,27 +12,6 @@ public class Source {
 		this.category = category;
 		this.attributes = attributes;
 	}
-	
-	/* Shouldn't be necessary: 
-	 * getMutualInformation(label1, label2), with label1 = label2, should give the same result
-	 * (NEEDS TO BE MODIFIED SO THAT IT IGNORES NULL VALUES)
-	 */
-//	public double getEntropy(String label){
-//		double entropy = 0.0;
-//		ArrayList<String> valueList, distinctValueList;
-//		
-//		valueList = getAttribute(label).getValues();
-//		distinctValueList = valueList.stream().distinct().collect(Collectors.toCollection(ArrayList::new));
-//		for(String val : distinctValueList){
-//			int n = Collections.frequency(valueList, val);
-//			double p = (double)n/valueList.size();
-//			if(label.equals("C"))
-//				System.out.println(p*(Math.log(p)/Math.log(2)));
-//			entropy -= p*(Math.log(p)/Math.log(2));
-//		}
-//		
-//		return entropy;
-//	}
 
 	public double getMutualInformation(String label1, String label2){
 		double mi = 0.0;
