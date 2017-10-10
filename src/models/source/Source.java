@@ -15,6 +15,7 @@ public class Source {
 	
 	/* Shouldn't be necessary: 
 	 * getMutualInformation(label1, label2), with label1 = label2, should give the same result
+	 * (NEEDS TO BE MODIFIED SO THAT IT IGNORES NULL VALUES)
 	 */
 //	public double getEntropy(String label){
 //		double entropy = 0.0;
@@ -55,9 +56,9 @@ public class Source {
 		return mi;
 	}
 	
-	private double[] getMarginalProbabilityDistribution(double[][] matrix, boolean row){
-		int dim1 =  row ? matrix.length : matrix[0].length;
-		int dim2 =  row ? matrix[0].length : matrix.length;
+	private double[] getMarginalProbabilityDistribution(double[][] jointPD, boolean row){
+		int dim1 =  row ? jointPD.length : jointPD[0].length;
+		int dim2 =  row ? jointPD[0].length : jointPD.length;
 		double[] margProb = new double[dim1];
 
 		/* iterates rows -> columns if row == true
@@ -67,9 +68,9 @@ public class Source {
 			double acc = 0.0;
 			for(int j = 0; j < dim2; j++)
 				if(row)
-					acc += matrix[i][j];
+					acc += jointPD[i][j];
 				else
-					acc += matrix[j][i];
+					acc += jointPD[j][i];
 			margProb[i] = acc;
 		}
 
@@ -83,6 +84,8 @@ public class Source {
 		for(int i = 0; i < values1.size(); i++){
 			String value1 = values1.get(i);
 			String value2 = values2.get(i);
+			if(value1.equals("#NULL#") || value2.equals("#NULL#"))
+				continue;
 			int index1 = distinctValues1.indexOf(value1);
 			int index2 = distinctValues2.indexOf(value2);
 			matrix[index1][index2]++;
