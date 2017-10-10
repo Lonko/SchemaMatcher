@@ -24,7 +24,9 @@ public class Attribute {
 	}
 	
 	public ArrayList<String> getDistinctValues(){
-		return this.values.stream().distinct().collect(Collectors.toCollection(ArrayList::new));
+		return this.values.stream().distinct()
+								   .filter(v -> !v.equals("#NULL#"))  //ignore null value
+								   .collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	public ArrayList<String> getValues() {
