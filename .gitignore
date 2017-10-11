@@ -1,4 +1,5 @@
-matchMatrix.py
+*.py
+*.tsv
 bin/
 target/
 .settings/
