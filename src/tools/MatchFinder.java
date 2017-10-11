@@ -4,6 +4,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 import math.utils.MatrixController;
 import models.graph.DependencyGraph;
@@ -15,12 +20,42 @@ public class MatchFinder {
 	
 	private GraphCreator gc;
 	private MatrixController mc;
-	private static final double ALPHA = 6.0;
+	private static final double ALPHA = 2.0;
 	private static final int N_SWITCH = 25;
 	
 	public MatchFinder(){
 		gc = new GraphCreator();
 		mc = new MatrixController();
+	}
+	
+	public Match getPartialMatch(Source s1, Source s2){
+		int cardinalityS1 = s1.getAttributes().size();
+		int cardinalityS2 = s2.getAttributes().size();
+		int minCardinality = cardinalityS1 <= cardinalityS2 ? cardinalityS1 : cardinalityS2;
+		//get all subsets of s1 and s2 with cardinality between 2 and Min(|s1|, |s2|)
+		HashMap<Integer, ArrayList<Source>> ps1 = s1.getPowerSet(minCardinality);
+		HashMap<Integer, ArrayList<Source>> ps2 = s2.getPowerSet(minCardinality);
+		Match bestGlobalMatch = new Match("", Double.MIN_VALUE, new HashMap<String, String>());
+		
+		//try all matches between subsets of s1 and s2, keeping the one with the highest Normal Distance
+		for(int i = 1; i <= minCardinality; i++){
+			Optional<Match> bestLocalMatch = ps1.get(i).stream()
+					//for each subset of cardinality i in ps1
+					.map(subset1 -> ps2.get(subset1.getAttributes().size()).parallelStream()
+									//find best matching subset of cardinality i in ps2
+									.map(subset2 -> getMatch(subset1, subset2))
+									.reduce((Match a, Match b) -> a.getDistance() > b.getDistance() ? a : b))
+					//map Optional<Match> to Match
+					.map(m -> m.get())
+					//get the best match among all the ones with cardinality "i"
+					.reduce((Match a, Match b) -> a.getDistance() > b.getDistance() ? a : b);
+			
+			//check if the best local match is better than the current best global match
+			if(bestLocalMatch.get().getDistance() > bestGlobalMatch.getDistance())
+				bestGlobalMatch = bestLocalMatch.get();
+		}
+		
+		return bestGlobalMatch;
 	}
 	
 	public Match getMatch(Source s1, Source s2){
@@ -35,12 +70,13 @@ public class MatchFinder {
 		matchIndex = this.mc.getMatchIndex(m1, m2);
 		
 		matchIndex = twoOptSwitch(m1, m2, matchIndex);
+		double finalDistance = getNormalDistance(m1, m2, matchIndex);
 		
-		return createMatch(g1, g2, s1.getWebsite(), s2.getWebsite(), matchIndex, category);
+		return createMatch(g1, g2, s1.getWebsite(), s2.getWebsite(), matchIndex, category, finalDistance);
 	}
 	
 	private Match createMatch(DependencyGraph g1, DependencyGraph g2, String w1, String w2,
-								int[] matchIndex, String category){
+								int[] matchIndex, String category, double nDistance){
 		
 		ArrayList<Node> nodesS1 = g1.getNodes();
 		ArrayList<Node> nodesS2 = g2.getNodes();
@@ -51,7 +87,7 @@ public class MatchFinder {
 			matchedLabels.put(w1+"//"+nodesS1.get(i1).getLabel(), w2+"//"+nodesS2.get(i2).getLabel());
 		}
 		
-		return new Match(category, matchedLabels);
+		return new Match(category, nDistance, matchedLabels);
 	}
 	
 	/* Makes use of an hill-climbing approach to improve the initial match
