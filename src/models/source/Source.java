@@ -13,7 +13,7 @@ public class Source {
 	public Source(String website, String category, ArrayList<Attribute> attributes){
 		this.website = website;
 		this.category = category;
-		this.attributes = attributes;
+		this.attributes = new ArrayList<Attribute>(attributes);
 	}
 
 	public double getMutualInformation(String label1, String label2){
