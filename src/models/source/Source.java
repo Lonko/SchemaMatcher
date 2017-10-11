@@ -1,6 +1,9 @@
 package models.source;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Source {
 	private String website;
@@ -76,6 +79,44 @@ public class Source {
 		
 		return matrix;
 	}
+
+	/* Returns a map containing lists of sources, each with a subset of the original's 
+	 * set of attributes. The cardinality of these sources is in the range [1, upperBound]
+	 */
+	public HashMap<Integer, ArrayList<Source>> getPowerSet(int upperBound){
+		ArrayList<Source> powerSet = new ArrayList<>();
+		powerSet.add(new Source(this.website, this.category, new ArrayList<Attribute>()));
+		
+		//create the powerset
+		if(this.attributes.size() >= 1)
+			for(Attribute a : this.attributes){
+				ArrayList<Source> newPowerSet = new ArrayList<>();
+				for(Source subset : powerSet){
+					if(subset.getAttributes().size() == upperBound)
+						continue;
+					else{
+						newPowerSet.add(subset);
+						Source newSubset = new Source(this.website, this.category, subset.getAttributes());
+						newSubset.addAttribute(a);
+						newPowerSet.add(newSubset);
+					}
+				}
+				powerSet = newPowerSet;
+			}
+		
+		HashMap<Integer, ArrayList<Source>> psMap = new HashMap<>();
+		/* trasform powerset into a map with entries in the form:
+		 *    cardinality -> list of subsets 
+		 */
+		powerSet.forEach(source -> {
+			int size = source.getAttributes().size();
+			ArrayList<Source> sourceList = psMap.getOrDefault(size, new ArrayList<Source>());
+			sourceList.add(source);
+			psMap.put(size, sourceList);
+		});
+		
+		return psMap;
+	}
 	
 	public String getWebsite() {
 		return this.website;
@@ -91,6 +132,10 @@ public class Source {
 
 	public void setCategory(String category) {
 		this.category = category;
+	}
+	
+	public void addAttribute(Attribute a){
+		this.attributes.add(a);
 	}
 	
 	public Attribute getAttribute(String label){
