@@ -9,10 +9,12 @@ import org.json.simple.JSONObject;
 public class Match {
 	
 	private String category;
+	private double distance;
 	private Map<String, ArrayList<String>> matchedAttributes;
 
-	public Match(String category, Map<String, String> labelsMatched){
+	public Match(String category, double nDistance, Map<String, String> labelsMatched){
 		this.category = category;
+		this.distance = nDistance;
 		matchedAttributes = new HashMap<>();
 		int cluster = 1;
 		for(Map.Entry<String, String> labels : labelsMatched.entrySet()){
@@ -61,6 +63,14 @@ public class Match {
 	public String toString() {
 		return "Match [category=" + category + ", matchedAttributes="
 				+ matchedAttributes + "]";
+	}
+
+	public double getDistance() {
+		return distance;
+	}
+
+	public void setDistance(double distance) {
+		this.distance = distance;
 	}
 
 }
