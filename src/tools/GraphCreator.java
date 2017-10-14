@@ -19,7 +19,7 @@ public class GraphCreator {
 		
 		for(Attribute a : source.getAttributes()){
 			String label = a.getLabel();
-			Node n = new Node(label, source.getMutualInformation(label, label));
+			Node n = new Node(label, source.getInternalMutualInformation(label, label));
 			nodes.add(n);
 		}
 		
@@ -29,7 +29,7 @@ public class GraphCreator {
 				String label2 = secondNode.getLabel();
 				if(!label1.equals(label2)){
 					UndirectedArc arc = new UndirectedArc(firstNode, secondNode, 
-												source.getMutualInformation(label1, label2));
+												source.getInternalMutualInformation(label1, label2));
 					if(!arcs.contains(arc))
 						arcs.add(arc);
 				}
