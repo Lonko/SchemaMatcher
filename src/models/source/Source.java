@@ -16,10 +16,20 @@ public class Source {
 		this.attributes = new ArrayList<Attribute>(attributes);
 	}
 
-	public double getMutualInformation(String label1, String label2){
-		double mi = 0.0;
-		Attribute a1 = getAttribute(label1);
+	/* returns the value of Mutual Information between 2 attributes of this source
+	 */
+	public double getInternalMutualInformation(String label1, String label2){
 		Attribute a2 = getAttribute(label2);
+		
+		return getMutualInformation(label1, a2);
+	}
+	
+	/* returns the value of Mutual Information between an attribute of this source and an external one
+	 * IMPORTANT: this only makes sense if the rows of the two attributes are aligned by record linkage
+	 */
+	public double getMutualInformation(String label, Attribute a2){
+		double mi = 0.0;
+		Attribute a1 = getAttribute(label);
 		
 		double[][] matrix = getJointProbDistr(a1.getValues(), a2.getValues(),
 												a1.getDistinctValues(), a2.getDistinctValues());
