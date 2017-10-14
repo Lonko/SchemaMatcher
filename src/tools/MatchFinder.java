@@ -5,10 +5,6 @@ import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.stream.Collectors;
 
 import math.utils.MatrixController;
 import models.graph.DependencyGraph;
@@ -20,8 +16,8 @@ public class MatchFinder {
 	
 	private GraphCreator gc;
 	private MatrixController mc;
-	private static final double ALPHA = 2.0;
-	private static final int N_SWITCH = 25;
+	private static final double ALPHA = 1.0;
+	private static final int N_SWITCH = 1000;
 	
 	public MatchFinder(){
 		gc = new GraphCreator();
@@ -38,7 +34,11 @@ public class MatchFinder {
 		Match bestGlobalMatch = new Match("", Double.MIN_VALUE, new HashMap<String, String>());
 		
 		//try all matches between subsets of s1 and s2, keeping the one with the highest Normal Distance
-		for(int i = 1; i <= minCardinality; i++){
+		for(int i = minCardinality; i > 1; i--){
+			double maxPossibleDistance = (i*i)+i;
+			//check if it's impossible to get a better match
+			if(maxPossibleDistance <= bestGlobalMatch.getDistance())
+				break;
 			Optional<Match> bestLocalMatch = ps1.get(i).stream()
 					//for each subset of cardinality i in ps1
 					.map(subset1 -> ps2.get(subset1.getAttributes().size()).parallelStream()
@@ -53,6 +53,8 @@ public class MatchFinder {
 			//check if the best local match is better than the current best global match
 			if(bestLocalMatch.get().getDistance() > bestGlobalMatch.getDistance())
 				bestGlobalMatch = bestLocalMatch.get();
+			
+			System.out.println("Finita cardinalità " + i);
 		}
 		
 		return bestGlobalMatch;
@@ -98,21 +100,26 @@ public class MatchFinder {
 		int[] candidateMatch = Arrays.copyOf(currentMatch, currentMatch.length);
 		double maxNDistance = getNormalDistance(m1, m2, currentMatch);
 		int l = currentMatch.length, switches = 0;
-		boolean repeat = false;
+		boolean repeat;
 
 		do{
 			//repeat nested for loop if a switch has been accepted
+			repeat = false;
 			hill_climbing:
-				for(int i = 0; i < l-1; i++){
-					repeat = false;
-					for(int j = i+1; j < l; j++){
+				for(int i = 0; i < l; i++){
+					for(int j = 0; j < l; j++){
+						if(i == j)
+							continue;
 						candidateMatch[j] = currentMatch[i];
 						candidateMatch[i] = currentMatch[j];
+						switches++;
 						double currentNDistance = getNormalDistance(m1,m2,candidateMatch);
+//						if(Arrays.toString(candidateMatch).equals("[1, 2, 0, 4, 6, 5, 7, 3]"))
+//							System.out.println("trovato: "+currentNDistance);
 						if(currentNDistance > maxNDistance){
+							System.out.println("switch");
 							currentMatch = Arrays.copyOf(candidateMatch, candidateMatch.length);;
 							maxNDistance = currentNDistance;
-							switches++;
 							repeat = true;
 							//restart
 							break hill_climbing;
