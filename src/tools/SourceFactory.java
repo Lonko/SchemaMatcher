@@ -25,6 +25,13 @@ public class SourceFactory {
 		this.datasetPath = datasetPath;
 	}
 	
+	
+	public ArrayList<Source> readByCatAndSite(ArrayList<String> websites, ArrayList<String> categories){
+		
+		return readByCatAndSite(websites, categories, null);
+		
+	}
+	
 	/* Reads sources from dataset, filtering by website and categories.
 	 * It's also possible to filter the attributes to consider (if validAttributes is null then all attributes
 	 * will be included)
