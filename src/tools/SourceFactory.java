@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.io.File;
 import java.io.FileReader;
 
@@ -87,6 +88,23 @@ public class SourceFactory {
 		return new Source(website, category, attributes);
 	}
 	
+	private ArrayList<String> getAllLabels(JSONArray allProducts){
+		Set<String> labels = new TreeSet<>();
+		
+		//products
+		for(Object obj : allProducts){
+			JSONObject product = (JSONObject) obj;
+			JSONObject attributesJson = (JSONObject) product.get("spec");
+		    Set<String> keys = attributesJson.keySet();
+			//get all new labels
+			for(String label : keys){
+				labels.add(label.toLowerCase());
+			}
+		}
+		
+		return new ArrayList<String>(labels);
+	}
+	
 	//case insensitive get on JSONObject
 	private String getIgnoreCase(JSONObject json, String key) {
 	    Set<String> keys = json.keySet();
@@ -97,11 +115,6 @@ public class SourceFactory {
 	    }
 
 	    return null;
-	}
-	
-	private ArrayList<String> getAllLabels(JSONArray allProducts){
-		//TO DO (remember lowercase!)
-		return null;
 	}
 
 	public String getDatasetPath() {
