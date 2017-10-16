@@ -9,11 +9,13 @@ public class Source {
 	private String website;
 	private String category;
 	private ArrayList<Attribute> attributes;
+	private ArrayList<String> urls;
 	
-	public Source(String website, String category, ArrayList<Attribute> attributes){
+	public Source(String website, String category, ArrayList<String> urls, ArrayList<Attribute> attributes){
 		this.website = website;
 		this.category = category;
 		this.attributes = new ArrayList<Attribute>(attributes);
+		this.urls = new ArrayList<String>(urls);
 	}
 
 	/* returns the value of Mutual Information between 2 attributes of this source
@@ -95,7 +97,7 @@ public class Source {
 	 */
 	public HashMap<Integer, ArrayList<Source>> getPowerSet(int upperBound){
 		ArrayList<Source> powerSet = new ArrayList<>();
-		powerSet.add(new Source(this.website, this.category, new ArrayList<Attribute>()));
+		powerSet.add(new Source(this.website, this.category, this.urls, new ArrayList<Attribute>()));
 		
 		//create the powerset
 		if(this.attributes.size() >= 1)
@@ -106,7 +108,7 @@ public class Source {
 						continue;
 					else{
 						newPowerSet.add(subset);
-						Source newSubset = new Source(this.website, this.category, subset.getAttributes());
+						Source newSubset = new Source(this.website, this.category, this.urls, subset.getAttributes());
 						newSubset.addAttribute(a);
 						newPowerSet.add(newSubset);
 					}

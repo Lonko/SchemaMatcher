@@ -25,7 +25,8 @@ public class SourceFactory {
 		this.datasetPath = datasetPath;
 	}
 	
-	
+	/* Reads sources from dataset, filtering by website and categories
+	 */
 	public ArrayList<Source> readByCatAndSite(ArrayList<String> websites, ArrayList<String> categories){
 		
 		return readByCatAndSite(websites, categories, null);
@@ -61,20 +62,21 @@ public class SourceFactory {
 		return sources;
 	}
 	
-	public Source readSource(File spec, String website, String category, 
-						List<String> validAttributes){
+	public Source readSource(File spec, String website, String category, List<String> validAttributes){
 		
 		ArrayList<Attribute> attributes = new ArrayList<>();
+		ArrayList<String> urls = new ArrayList<>();
 		Map<String, ArrayList<String>> attributesValues = new HashMap<>();
 		JSONParser parser = new JSONParser();
 		try{
 			JSONArray sourceJSON = (JSONArray) parser.parse(new FileReader(spec.getAbsolutePath()));
 			if(validAttributes == null)
-				validAttributes = getAllLabels(sourceJSON); //TO DO 
+				validAttributes = getAllLabels(sourceJSON);  
 			//products
 			for(Object obj : sourceJSON){
 				JSONObject product = (JSONObject) obj;
 				JSONObject attributesJson = (JSONObject) product.get("spec");
+				urls.add((String) product.get("url"));
 				//get value for all valid attributes
 				for(String attrLabel : validAttributes){
 					String value = getIgnoreCase(attributesJson, attrLabel);
@@ -92,7 +94,7 @@ public class SourceFactory {
 			e.printStackTrace();
         }
 		
-		return new Source(website, category, attributes);
+		return new Source(website, category, urls, attributes);
 	}
 	
 	private ArrayList<String> getAllLabels(JSONArray allProducts){
