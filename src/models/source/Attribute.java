@@ -28,6 +28,18 @@ public class Attribute {
 								   .filter(v -> !v.equals("#NULL#"))  //ignore null value
 								   .collect(Collectors.toCollection(ArrayList::new));
 	}
+	
+	/*
+	 * filters and orders the values list based on the indexes list provided 
+	 */
+	public ArrayList<String> getRLValues(ArrayList<Integer> indexes){
+		ArrayList<String> newValues = new ArrayList<>();
+		
+		for(Integer index : indexes)
+			newValues.add(this.values.get(index));
+		
+		return newValues;
+	}
 
 	public ArrayList<String> getValues() {
 		return this.values;
