@@ -171,5 +171,13 @@ public class Source {
 		return "Source [website=" + website + ", category=" + category
 				+ ", attributes=" + attributes + "]";
 	}
+
+	public ArrayList<String> getUrls() {
+		return urls;
+	}
+
+	public void setUrls(ArrayList<String> urls) {
+		this.urls = urls;
+	}
 	
 }
